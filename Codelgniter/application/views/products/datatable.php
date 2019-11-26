@@ -1,69 +1,30 @@
-
-<div class="container">
-	<div class="row add">
-		<div class="col-lg-2">
-			
-		</div>
-		<div class="col-lg-8 col-md-12 text-center">
-			<h2>Danh sách sản phẩm</h2>
-		</div>
-		<div class="col-lg-2 text-center button">
+<div class="container-fluid">
+	<div class="row text-center"><h1>Danh sách sản phẩm</h1></div>
+	<div class="row text-right">
+		<div style="padding-bottom: 10px; padding-right: 15px">
 			<input type="button" id="btn" class="btn bg-dark" name="" value="Thêm">
 		</div>
 	</div>
-	<div class="table-responsive">
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th nowrap>ID</th>
-					<th nowrap>Tên sản phẩm</th>
-					<th nowrap>Nội dung</th>
-					<th nowrap>Danh mục</th>
-					<th nowrap>Hình ảnh</th>
-					<th nowrap>Kích cỡ</th>
-					<th nowrap>Nhà sản xuất</th>
-					<th nowrap>Giá (vnđ)</th>
-					<th nowrap>Ngày tạo</th>
-					<th nowrap>Lượt xem</th>
-					<th nowrap>Tổng</th>
-					<th nowrap>Hành động</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php foreach ($products as $news_item): ?>
-					<tr>
-						<td><?php echo $news_item['product_id']; ?></td>
-						<td><?php echo $news_item['name'] ?></td>
-						<td><?php echo $news_item['content']; ?></td>
-						<td><?php echo $news_item['catalog']; ?></td>
-						<td><img style="width: 50px" src="<?php echo base_url('image/'.$news_item['image_link']); ?>"></td>
-						<td>
-							<?php 
-							for ($i=0; $i < count($news_item['size']) ; $i++) { 
-								echo $news_item['size'][$i]->text_size." ";
-							}
-							?>
-						</td>
-						<td><?php echo $news_item['maker_id']; ?></td>
-						<td><?php echo $news_item['price']; ?></td>
-						<td><?php echo $news_item['created']; ?></td>
-						<td><?php echo $news_item['view']; ?></td>
-						<td><?php echo $news_item['total']; ?></td>
-						<td>
-							<input class="update  btn" type="button" name="" id="<?php echo $news_item['product_id']; ?>" value="Sửa"> /
-							<input class="delete btn" type="button" name="" id="<?php echo $news_item['product_id']; ?>" value="Xóa">
-						</td>
-					</tr>
-				<?php endforeach; ?>
-				
-			</tbody>
-		</table>
-	</div>
-</div>
-<div class="container" style="text-align: right">
-	<div class="page"><?php echo $page; ?></div>
-</div>
+	<table id="example" class="display" style="width:100%">
+	<thead>
+	    <tr>
+	        <th>ID</th>
+	        <th nowrap>Tên sản phẩm</th>
+	        <th nowrap>Nội dung</th>
+	        <th nowrap>Danh mục</th>
+	        <th nowrap>Hình ảnh</th>
+	        <th nowrap>Size</th>
+	        <th nowrap>nhà ản xuất</th>
+	        <th nowrap>Gía (VND)</th>
+	        <th nowrap>Ngày tạo</th>
+	        <th nowrap>Lượt xem</th>
+	        <th nowrap>Tổng SP</th>
+	        <th nowrap>Hành động</th>
+	    </tr>
+	</thead>
 
+	</table>
+</div>
 
 <div class="screen_hide"></div>
 <div class="form_hide">
@@ -131,6 +92,9 @@
 					</div>
 					<div style="padding-top: 10px">
 						<input type="submit" name="submit" value="Thêm" class="btn form-control btn-primary submit">
+						<div>
+							<?php echo form_open('form'); ?>
+						</div>
 					</div>
 				</div>
 			</form>
@@ -138,4 +102,3 @@
 
 	</div>
 </div>
-

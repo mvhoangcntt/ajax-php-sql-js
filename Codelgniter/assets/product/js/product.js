@@ -1,37 +1,33 @@
-// ngày tháng của boostrap
-	$(function () {  
-	$("#datepicker").datepicker({         
-	autoclose: true,         
-	todayHighlight: true 
-	}).datepicker('update', new Date());
-	});
+// url
+var json_update = BASE_URL+"products/json_update/";
+var ajax_delete = BASE_URL+"products/delete_pr/";
+var ajax_create = BASE_URL+"products/create/";
+var ajax_update = BASE_URL+"products/update/";
 
-//add thông tin update sản phẩm
+// add form update thông tin sản phẩm
 $(document).on("click",".update",function(){
-	$(".form_size").remove();
-	$( ".formthem" ).addClass( "formthem2" );
-	$( ".maunen" ).addClass( "maunen2" );
+	$(".rem").remove();
+	$( ".form_hide" ).addClass( "form_show" );
+	$( ".screen_hide" ).addClass( "screen_show" );
 	var product_id = $(this).attr("id");
 	$("input[name='submit']").attr("id",product_id);
 	$.ajax({
         type: "GET",
-        url: 'http://localhost/codelgniter/index.php/products/json_update/'+ product_id +'',   
+        url: json_update + product_id,   
         success: function(response){ 
         	var jsonData = JSON.parse(response);
-        	console.log(jsonData);
         	delete jsonData.image_link;// input file k thể gán giá trị
         	for(var key in jsonData){
         		$("input[name='"+key+"']").val(jsonData[key]);
 				$("textarea[name='"+key+"']").val(jsonData[key]);
 				$("select[name='"+key+"']").val(jsonData[key],'selected');
         	}
-        	$(".rem").remove();
-			for(var i = 0; i < jsonData.quantity.length; i++){
-				if (jsonData.quantity[i] && jsonData.text_size[i]) {
-					$(".totong").append("<div class='rem'><div class='form_size'><div class='imput_right'><input alt='0' type='text' id='quantity' class='form-control' value='"+jsonData.quantity[i]+"' name='quantity[quantity_"+i+"]' placeholder='Số lượng'></div><div class='input_left'><input title='0' type='text' id='textsize' class='form-control' value='"+jsonData.text_size[i]+"' name='textsize[textsize_"+i+"]' placeholder='size'></div><i class='fa fa-times'></i></div><div class='chualoi quantity_"+i+" textsize_"+i+"'></div></div>");
-				}
-				size = i;
-			}
+        	// lấy thông tin form size
+        	for(var i in jsonData.size){
+        		$(".totong").append("<div class='rem'><div class='form_size'><div class='imput_right'><input type='text' id='quantity' class='form-control' value='"+jsonData.size[i]['quantity']+"' name='quantity["+i+"]' placeholder='Số lượng'></div><div class='input_left'><input title='0' type='text' id='textsize' class='form-control' value='"+jsonData.size[i]['text_size']+"' name='textsize["+i+"]' placeholder='size'></div><i class='fa fa-times'></i></div></div>");
+        	}
+        	// lấy kick thước mảng
+        	size = jsonData.size.length -1;
 			$(".nameFrom").text("Form update");
 			$("input[name='submit']").val("Update");
         }
@@ -41,21 +37,35 @@ $(document).on("click",".update",function(){
 var size = 0;
 $(".add_size").click(function(){
 	size++;
-	$(".totong").append("<div class='rem'><div class='form_size'><div class='imput_right'><input alt='0' type='text' id='quantity' class='form-control' name='quantity[quantity_"+size+"]' placeholder='Số lượng'></div><div class='input_left'><input title='0' type='text' id='textsize' class='form-control' name='textsize[textsize_"+size+"]' placeholder='size'></div><i class='fa fa-times'></i></div><div class='chualoi quantity_"+size+" textsize_"+size+"'></div></div>");
-	
-	console.log(size);
+	$(".totong").append("<div class='rem'><div class='form_size'><div class='imput_right'><input type='text' id='quantity' class='form-control' name='quantity["+size+"]' placeholder='Số lượng'></div><div class='input_left'><input type='text' id='textsize' class='form-control' name='textsize["+size+"]' placeholder='size'></div><i class='fa fa-times'></i></div></div>");
 });
 // xóa kích cỡ trong form
 $(document).on("click",".fa",function(){
-    $( this ).parents('.rem').remove();// close
+    $( this ).parents('.rem').remove();
+    // size--;
+    // var i = 0;
+    // $('.rem').each(function(){
+    // 	$(this).find('#quantity').attr('name','quantity['+i+']');
+    // 	$(this).find('#textsize').attr('name','textsize['+i+']');
+    // 	i++;
+    // })
 })
+
+// remove form
+$(".screen_hide").click(function(){
+    $( ".form_hide" ).removeClass( "form_show" );
+	$( ".screen_hide" ).removeClass( "screen_show" );
+	$( "#validation").trigger("reset");
+	$(".rem").remove();
+	$(".totong").append("<div class='rem'><div class='form_size'><div class='imput_right'><input type='text' id='quantity' class='form-control' name='quantity[0]' placeholder='Số lượng'></div><div class='input_left'><input type='text' id='textsize' class='form-control' name='textsize[0]' placeholder='size'></div><i class='fa fa-times'></i></div></div>");
+})
+
 // xóa sản phẩm
 $(document).on("click",".delete",function(){
 	var product_id = $(this).attr("id");
-	console.log(product_id);
 	$.ajax({
 		type : "GET",
-		url : 'http://localhost/Codelgniter/index.php/products/delete_pr/'+ product_id +'',
+		url : ajax_delete + product_id,
 		success: function(response){
 			var jsonData = JSON.parse(response);
 	        if (jsonData.type === 'errors') {
@@ -68,33 +78,16 @@ $(document).on("click",".delete",function(){
 	})
 })
 
-// hiển thị form
-$(".maunen").click(function(){
-    $( ".formthem" ).removeClass( "formthem2" );
-	$( ".maunen" ).removeClass( "maunen2" );
-	location.reload();
-})
-
+// mở form insert 
 $("#btn").click(function(){
-	// gán giá trị mặc định trong form
-    $( ".formthem" ).addClass( "formthem2" );
-	$( ".maunen" ).addClass( "maunen2" );
-
-	$("input[name='name']").val("");
-	$("textarea[name='content']").val("");
-	
-	$("select[name='catalog']").val("1");
-	$("select[name='catalog']").selected = true;
-	
-	$("select[name='maker_id']").val("1");
-	$("select[name='maker_id']").selected = true;
-	$("input[name='price']").val("");
-	$("input[name='total']").val("");
+	// add form
+    $( ".form_hide" ).addClass( "form_show" );
+	$( ".screen_hide" ).addClass( "screen_show" );
 
 	$(".nameFrom").text("Form insert");
 	$("input[name='submit']").val("Insert");
 })
-// thêm sản phẩm
+// kiểm tra dữ liệu hợ lệ
 $(".submit").click(function(event){
 	$(".err").remove();
 	var name = $("input[name='name']").val();
@@ -114,7 +107,7 @@ $(".submit").click(function(event){
 		}
 	}
 	
-	if (content === "") {
+	if (content === '') {
 		errArray.push({content : 'Không được để trống !'});
 	}else{
 		if (content.length < 5) {
@@ -135,7 +128,6 @@ $(".submit").click(function(event){
 							
 	for(var i = 0; i< errArray.length; i++){
 		for(var key in errArray[i]){
-			console.log(key + " : " + errArray[i][key]);
 		    $("input[name='"+key+"']").parent().append("<div class='err'>"+ errArray[i][key] +"</div>");
 		    if (key === "content") {
 		    	$("textarea[name='content']").parent().append("<div class='err'>"+ errArray[i][key] +"</div>");
@@ -148,12 +140,10 @@ $(".submit").click(function(event){
 		if ($("input[name='submit']").val() === "Insert") {
 			var form = $('#validation')[0];
 			var data = new FormData(form);
-			// data.append("quantity",quantity);
-			// data.append("text_size",text_size);
 			$.ajax({
 				type: 		"POST",
 				enctype: 	"multipart/form-data",
-				url: 		"http://localhost/codelgniter/index.php/products/create/",
+				url: 		ajax_create,
 				data: data,
 				processData: false,
 		        contentType: false,
@@ -161,19 +151,10 @@ $(".submit").click(function(event){
 		        timeout: 800000,
 		        success: function (response){
 		        	var jsonData = JSON.parse(response);
-		        		console.log(jsonData);
-		        		console.log(jsonData.content);
-		        		var chuoi = 'quantity';
-         				var chuoi2 = 'textsize';
 		        	if (jsonData.type === 'errors') {
+		        		alert("Vui lòng kiểm tra lại !");
 		        		for(var key in jsonData.value){
-		        			console.log(key +" : "+ jsonData.value[key]);
-
-		        			if (key.slice(0,8) === chuoi || key.slice(0,8) === chuoi2) {
-		        				$("."+key+"").append("<div class='err'>"+ jsonData.value[key] +"</div>");
-		        			}else{
-		        				$("input[name='"+key+"']").parent().append("<div class='err'>"+ jsonData.value[key] +"</div>");
-		        			}
+		        			$("input[name='"+key+"']").parent().append("<div class='err'>"+ jsonData.value[key] +"</div>");
 						    if (key === "content") {
 						    	$("textarea[name='content']").parent().append("<div class='err'>"+ jsonData.value.content +"</div>");
 						    }
@@ -199,7 +180,7 @@ $(".submit").click(function(event){
 			$.ajax({
 				type: 		"POST",
 				enctype: 	"multipart/form-data",
-				url: 		"http://localhost/codelgniter/index.php/products/update/"+product_id+"",
+				url: 		ajax_update + product_id,
 				data: data,
 				processData: false,
 		        contentType: false,
@@ -208,14 +189,9 @@ $(".submit").click(function(event){
 		        success: function (data){
 		        	var jsonData = JSON.parse(data);
 		        	if (jsonData.type === 'errors') {
-		        		var chuoi = 'quantity';
-         				var chuoi2 = 'textsize';
+		        		alert("Vui lòng kiểm tra lại !");
 		        		for(var key in jsonData.value){
-		        			if (key.slice(0,8) === chuoi || key.slice(0,8) === chuoi2) {
-		        				$("."+key+"").append("<div class='err'>"+ jsonData.value[key] +"</div>");
-		        			}else{
-		        				$("input[name='"+key+"']").parent().append("<div class='err'>"+ jsonData.value[key] +"</div>");
-		        			}
+			        		$("input[name='"+key+"']").parent().append("<div class='err'>"+ jsonData.value[key] +"</div>");
 						    if (key === "content") {
 						    	$("textarea[name='content']").parent().append("<div class='err'>"+ jsonData.value.content +"</div>");
 						    }

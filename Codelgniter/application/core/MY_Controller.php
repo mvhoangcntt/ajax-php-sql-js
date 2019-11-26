@@ -6,27 +6,26 @@ class MY_Controller extends CI_Controller
 		parent::__construct();
 		$this->load->helper(array('form', 'url'));
       	$this->load->library('form_validation');
+      	$this->load->library('pagination');
       	$this->form_validation->set_error_delimiters('','');
 	}
 	// upload file (đường dẫn, tên thẻ input)
 	function upload($upload_path = '', $fileimage = ''){
 		$config = $this->config($upload_path);
 		$this->load->library('upload', $config);
-		$data = array(
-			'type' 		=> 'err',
-			'message' 	=> 'lỗi upload !',
-			'loi'		=>	$this->upload->display_errors()
-		);
-
-		if($this->upload->do_upload($fileimage)){
-			// $data = $this->upload->data();
-			$data = array(
-				'type' 		=> 'success',
-				'message'	=> 'Thành công !',
-				'image'		=>	$this->upload->data()
-			);
+		$uploaded_name = '';
+		if(!$this->upload->do_upload($fileimage)){
+			if (empty($this->input->post('id'))) {
+				return $uploaded_name;
+			}
+			$er = array(
+	            'type'=>'errors',
+	            'messet' => 'Up lỗi !'
+            );			
+            exit(json_encode($er));
 		}
-		return $data;
+		$uploaded_name = $this->upload->data()['file_name'];
+		return $uploaded_name;
 	}
 	function config($upload_path = ''){
 		$config = array();	

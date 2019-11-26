@@ -5,7 +5,7 @@
 }
 .form_size{
 	display: flex;
-	align-items: center;
+	/* align-items: center; */
 }
 .width{
 	width: 100%;
@@ -19,6 +19,7 @@
 .fa{
 	color: #718096;
 	font-size: 20px;
+	padding-top: 6px;
 	margin-left: 4px;
 }
 .size{
@@ -52,7 +53,7 @@
 .box{
 	padding: 10px;
 }
-.maunen2{
+.screen_show{
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -62,10 +63,10 @@
 	bottom: 0;
 	background-color: rgba(0, 0, 0, 0.6);
 }
-.formthem{
+.form_hide{
 	display: none;
 }
-.formthem2{
+.form_show{
 	height: 80%;
 	max-height: 502px;
 	width: 400px;
@@ -73,7 +74,7 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	position: absolute;
+	position: fixed;
 	display: block;
 	animation: show 0.8s ease;
 	background-color: #fff;
@@ -121,6 +122,19 @@
 	box-sizing: border-box;
 	grid-template-columns: 1fr 1fr;
 }
-.maume{
-	background: radial-gradient(213px at top right,#685e31,rgba(0,0,152,-1)),radial-gradient(238px at top left,#0d92c3,rgba(0,0,0,0)),radial-gradient(203px at bottom left,#8a43bd,rgba(0,0,128,0)),radial-gradient(241px at bottom right,#1d8d42,rgba(0,0,0,0));
+
+.table{
+	background-color: #fff;
+	/* box-shadow: 0px 0px 5px #666; */
+	/* box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); */
+	box-shadow: 0px 0px 5px 1px #666;
+	/* background-color: red; */
+	/* background: radial-gradient(213px at top right,#685e31,rgba(0,0,152,-1)),radial-gradient(238px at top left,#0d92c3,rgba(0,0,0,0)),radial-gradient(203px at bottom left,#8a43bd,rgba(0,0,128,0)),radial-gradient(241px at bottom right,#1d8d42,rgba(0,0,0,0)); */
 }
+tbody tr{
+	margin-bottom: 1.2rem;
+}
+.button{
+	padding-top: 25px;
+}
+

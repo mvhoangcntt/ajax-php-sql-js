@@ -8,11 +8,28 @@ class Products extends MY_Controller {
       parent::__construct();
       $this->load->model('products_model');
    }
+   public function index()
+   {
+      $data = array();
+      $data['layout'] = $this->load->view('products/datatable', $data, true);
+      $this->load->view('partical/layout_datatable',$data);
+   }
+   public function jsonDatatable()
+   {
+      $data = $this->products_model->get_news();
+      foreach ($data as $index => $value) {
+         $size = $this->products_model->get_size($value->product_id);
+         $value->size = $size;
+      }
+      $product = array(
+         "data"   => $data,
+      );
+      exit(json_encode($product));
+   }
    public function view($limit = '',$page = 'listproduct')
    {
-      $this->load->library('pagination');
       $config['total_rows'] = $this->products_model->countALL();
-      $config['base_url']   = base_url()."index.php/products/view";
+      $config['base_url']   = base_url()."products/view";
       $config['per_page']   = 4;
       $this->pagination->initialize($config);
       $data['page']         = $this->pagination->create_links();
@@ -24,12 +41,11 @@ class Products extends MY_Controller {
       $data['layout'] = $this->load->view('products/'.$page, $data, true);
       $this->load->view('partical/master_layout',$data);
    }
+   
    public function create(){
       $data = $this->convert_data();
       // thời gian hiện tại
-      $date = new DateTime();
-      $created = date_format($date,"Y/m/d");
-      $data['created'] = $created;
+      $data['created'] = date("Y-m-d");
       // bóc thông tin để insert bảng size
       $quantity   =  $data['quantity'];
       $text_size  =  $data['textsize'];
@@ -38,52 +54,18 @@ class Products extends MY_Controller {
       unset($data['textsize']);
       $insert_id = $this->products_model->set_products($data);
       if($insert_id != ''){
-         // lấy thông tin cần insert
-         $si = array();
-         foreach ($quantity as $key => $value) {
-            array_push($si, $value);            
-         }
-         $ze = array();
-         foreach ($text_size as $key => $value) {
-            array_push($ze, $value);            
-         }
-         for ($i=0; $i < count($si) ; $i++) {
-            $size = array(
-               "product_id"   => $insert_id,
-               "text_size"    => $ze[$i],
-               "quantity"     => $si[$i],
-            );
-            $this->products_model->set_size($size); 
-         }
+         $this->convert_size($insert_id, $quantity, $text_size);
+      }else{
          $er = array(
-            'type'=>'success',
+            'type'=>'errors',
          );
          exit(json_encode($er));
       }
    }
    public function json_update($id){
-      $data      = $this->products_model->get_json($id);
-      // chuyển về dạng json
-      $product   = array();
-      $quantity  = array();
-      $text_size = array();
-      for ($i=0; $i < count($data) ; $i++) { 
-         foreach ($data[$i] as $key => $value) {
-            $product[$key] = $value;
-            if ($key == 'quantity') {
-               array_push($quantity, $value);
-            }
-            if ($key == 'text_size') {
-               array_push($text_size, $value);
-            }
-         }
-      }
-      unset($product['quantity']);
-      unset($product['text_size']);
-      $product['quantity']    = $quantity;
-      $product['text_size']   = $text_size;
-      
-      die(json_encode($product));
+      $data       = $this->products_model->get_json($id);
+      $data->size = $this->products_model->get_size_come_product($id);
+      die(json_encode($data));
    }
 
    public function update($id){
@@ -94,43 +76,44 @@ class Products extends MY_Controller {
       unset($data['textsize']);
       if ($this->products_model->update_products($data, $id)) 
       {
-         // xóa thông tin cũ
-         $this->products_model->delete_size($id);
-         // lấy thông tin mới cần insert
-         $si = array();
-         foreach ($quantity as $key => $value) {
-            array_push($si, $value);            
-         }
-         $ze = array();
-         foreach ($text_size as $key => $value) {
-            array_push($ze, $value);            
-         }
-         for ($i=0; $i < count($si) ; $i++) {
-            $size = array(
-               "product_id"   => $id,
-               "text_size"    => $ze[$i],
-               "quantity"     => $si[$i],
-            );
-            $this->products_model->set_size($size); 
-         }
+         $this->convert_size($id, $quantity, $text_size);
+      }else{
          $er = array(
-            'type'=>'success',
+            'type'=>'errors',
          );
          exit(json_encode($er));
       }
+   }
+   public function convert_size($id, $quantity, $text_size){
+      // xóa thông tin cũ
+      $this->products_model->delete_size($id);
+      foreach ($quantity as $key_quantity => $value_quantity) {
+         $size = array(
+            "product_id"   => $id,
+            "text_size"    => $text_size[$key_quantity],
+            "quantity"     => $value_quantity,
+         );
+         if($this->products_model->set_size($size)){
+            $er = array(
+            'type'=>'errors',
+            );
+            exit(json_encode($er));
+         }
+      }
+      $er = array(
+         'type'=>'success',
+      );
+      exit(json_encode($er));
    }
    // chứa data
    public function convert_data(){
       $this->_validate();
       $data  = $this->input->post();
-      $image = parent::upload("./image","image_link");
-      if($image['type'] == 'success'){
-         $image_link = $image['image']['file_name'];
-         $data['image_link'] = $image_link;
-      }
+      if(!empty(parent::upload("./image","image_link")))
+         $data['image_link'] = parent::upload("./image","image_link");
       return $data;
    }
-// validate kiểm tra lỗi
+   // validate kiểm tra lỗi
    public function _validate(){
       if($this->input->post()){
          $config = array(
@@ -173,7 +156,7 @@ class Products extends MY_Controller {
          );
          $post = $this->input->post();
          foreach ($post['quantity'] as $key => $value) {
-            $config[$key] = array(
+            $config['quantity['.$key.']'] = array(
                'field'  => "quantity[".$key."]",
                'label'  => 'quantity_'.$key,
                'rules'  => 'required|numeric',
@@ -182,9 +165,7 @@ class Products extends MY_Controller {
                   'numeric'   => 'Không phải là số !'
                ),
             );
-         }
-         foreach ($post['textsize'] as $key => $value) {
-            $config[$key] = array(
+            $config['textsize['.$key.']'] = array(
                'field'  => "textsize[".$key."]",
                'label'  => 'textsize_'.$key,
                'rules'  => 'required',
