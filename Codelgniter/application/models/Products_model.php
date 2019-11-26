@@ -1,20 +1,36 @@
 <?php
 class Products_model extends MY_Model {
 
+   private $searchCol = array('name','product_id','content');
+
    public function __construct()
    {
       $this->load->database();
    }
-   // lấy ra full 1 trang
-   public function get_news()
+   
+   public function get_product_datatable($dataTable)
    {
-      // $this->db->select('*')->from('product')->where('product_id',145);
+      $this->search($dataTable['search']);
+      $this->db->limit($dataTable['length'], $dataTable['start']);
       $query = $this->db->get('product');
       return $query->result();
    }
    // đếm số bản ghi
-   public function countALL(){
-      return $this->db->count_all("product");
+   public function countALL($search){
+      $this->search($search);
+      $query = $this->db->get('product');
+      return count($query->result());
+   }
+   public function search($search){
+      if (!empty($search)) {
+         foreach($this->searchCol as $col){
+            if (count($this->searchCol) == 1) {
+               $this->db->like($col,$search);   
+            } else {
+               $this->db->or_like($col,$search);            
+            }
+         }
+      }
    }
    // lấy ra số bản ghi(số bản gi, điểm bắt đầu)
    public function getList($total, $start){

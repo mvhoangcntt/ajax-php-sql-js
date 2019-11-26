@@ -1,8 +1,10 @@
 // url
-var listData = "http://localhost/codelgniter/index.php/products/jsonDatatable";
+var listData = BASE_URL+"products/jsonDatatable";
 
 $(document).ready(function() {
 	$('#example').DataTable( {
+		"processing": true,
+		"serverSide": true,
         "ajax": listData,
         "language":{
         	"search": "Tìm kiếm :",

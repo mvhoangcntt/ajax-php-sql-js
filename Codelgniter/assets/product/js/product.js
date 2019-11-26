@@ -22,7 +22,7 @@ $(document).on("click",".update",function(){
 				$("textarea[name='"+key+"']").val(jsonData[key]);
 				$("select[name='"+key+"']").val(jsonData[key],'selected');
         	}
-        	// lấy thông tin form size
+        	// bóc mảng size ra lấy thông tin form size
         	for(var i in jsonData.size){
         		$(".totong").append("<div class='rem'><div class='form_size'><div class='imput_right'><input type='text' id='quantity' class='form-control' value='"+jsonData.size[i]['quantity']+"' name='quantity["+i+"]' placeholder='Số lượng'></div><div class='input_left'><input title='0' type='text' id='textsize' class='form-control' value='"+jsonData.size[i]['text_size']+"' name='textsize["+i+"]' placeholder='size'></div><i class='fa fa-times'></i></div></div>");
         	}
@@ -42,13 +42,6 @@ $(".add_size").click(function(){
 // xóa kích cỡ trong form
 $(document).on("click",".fa",function(){
     $( this ).parents('.rem').remove();
-    // size--;
-    // var i = 0;
-    // $('.rem').each(function(){
-    // 	$(this).find('#quantity').attr('name','quantity['+i+']');
-    // 	$(this).find('#textsize').attr('name','textsize['+i+']');
-    // 	i++;
-    // })
 })
 
 // remove form
@@ -69,9 +62,9 @@ $(document).on("click",".delete",function(){
 		success: function(response){
 			var jsonData = JSON.parse(response);
 	        if (jsonData.type === 'errors') {
-	        	alert("Đã có lỗi !");
+	        	alert(jsonData.message);
 	        }else{
-	        	alert("Xóa thành công !");
+	        	alert(jsonData.message);
 	        	location.reload();
 	        }
 		}
@@ -152,7 +145,7 @@ $(".submit").click(function(event){
 		        success: function (response){
 		        	var jsonData = JSON.parse(response);
 		        	if (jsonData.type === 'errors') {
-		        		alert("Vui lòng kiểm tra lại !");
+		        		alert(jsonData.message);
 		        		for(var key in jsonData.value){
 		        			$("input[name='"+key+"']").parent().append("<div class='err'>"+ jsonData.value[key] +"</div>");
 						    if (key === "content") {
@@ -164,7 +157,7 @@ $(".submit").click(function(event){
 		        		$( ".formthem" ).removeClass( "formthem2" );
 						$( ".maunen" ).removeClass( "maunen2" );
 						location.reload();
-						alert("Thêm thành công !");
+						alert(jsonData.message);
 		        	}
 		        },
 		        error: function (e){
@@ -189,7 +182,7 @@ $(".submit").click(function(event){
 		        success: function (data){
 		        	var jsonData = JSON.parse(data);
 		        	if (jsonData.type === 'errors') {
-		        		alert("Vui lòng kiểm tra lại !");
+		        		alert(jsonData.message);
 		        		for(var key in jsonData.value){
 			        		$("input[name='"+key+"']").parent().append("<div class='err'>"+ jsonData.value[key] +"</div>");
 						    if (key === "content") {
@@ -201,7 +194,7 @@ $(".submit").click(function(event){
 		        		$( ".formthem" ).removeClass( "formthem2" );
 						$( ".maunen" ).removeClass( "maunen2" );
 						location.reload();
-						alert("Thay đổi thành công !");
+						alert(jsonData.message);
 		        	}
 		        },
 		        error: function (e){

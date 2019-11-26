@@ -12,23 +12,28 @@ class Products extends MY_Controller {
    {
       $data = array();
       $data['layout'] = $this->load->view('products/datatable', $data, true);
-      $this->load->view('partical/layout_datatable',$data);
+      $this->load->view('partical/master_layout',$data);
    }
    public function jsonDatatable()
    {
-      $data = $this->products_model->get_news();
+      $dataTable['start']  = $this->input->get('start');
+      $dataTable['length'] = $this->input->get('length');
+      $dataTable['search'] = $this->input->get('search[value]');
+      $data                = $this->products_model->get_product_datatable($dataTable);
       foreach ($data as $index => $value) {
-         $size = $this->products_model->get_size($value->product_id);
+         $size        = $this->products_model->get_size($value->product_id);
          $value->size = $size;
       }
       $product = array(
-         "data"   => $data,
+         "data"            => $data,
+         "recordsTotal"    => $this->products_model->countALL($dataTable['search']),
+         "recordsFiltered" => $this->products_model->countALL($dataTable['search']),
       );
       exit(json_encode($product));
    }
    public function view($limit = '',$page = 'listproduct')
    {
-      $config['total_rows'] = $this->products_model->countALL();
+      $config['total_rows'] = $this->products_model->countALL('search');
       $config['base_url']   = base_url()."products/view";
       $config['per_page']   = 4;
       $this->pagination->initialize($config);
@@ -58,6 +63,7 @@ class Products extends MY_Controller {
       }else{
          $er = array(
             'type'=>'errors',
+            'message' => "Lỗi insert form product !",
          );
          exit(json_encode($er));
       }
@@ -80,6 +86,7 @@ class Products extends MY_Controller {
       }else{
          $er = array(
             'type'=>'errors',
+            'message' => "Lỗi update from product !",
          );
          exit(json_encode($er));
       }
@@ -96,12 +103,14 @@ class Products extends MY_Controller {
          if($this->products_model->set_size($size)){
             $er = array(
             'type'=>'errors',
+            'message' => "Lỗi insert from size !",
             );
             exit(json_encode($er));
          }
       }
       $er = array(
          'type'=>'success',
+         'message' => "Thành công !",
       );
       exit(json_encode($er));
    }
@@ -190,6 +199,7 @@ class Products extends MY_Controller {
             }
             $er = array(
                'type'  =>'errors',
+               'message' => "Đã sảy ra lỗi vui lòng kiểm tra lại !",
                'value' => $result
             );
             exit(json_encode($er));
@@ -201,11 +211,13 @@ class Products extends MY_Controller {
       if($this->products_model->delete_product($id)){
          $er = array(
             'type'=>'success',
+            'message' => "Xóa thành công !",
          );
          exit(json_encode($er));
       }else{
          $er = array(
             'type'=>'errors',
+            'message' => "Đã sảy ra lỗi !",
          );
 
          exit(json_encode($er));
