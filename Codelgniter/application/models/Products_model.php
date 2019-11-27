@@ -1,42 +1,85 @@
 <?php
 class Products_model extends MY_Model {
 
-   private $searchCol = array('name','product_id','content');
+   private $searchCol = array(
+      'product.product_id',
+      'name',
+      'content',
+      'catalog',
+      'image_link',
+      '',
+      'maker_id',
+      'price',
+      'created',
+      'view',
+      'total',
+      '',
+   );
 
    public function __construct()
    {
       $this->load->database();
    }
-   
+   // lấy dữ liệu cho datatable
    public function get_product_datatable($dataTable)
-   {
+   {  
+      $this->_filter($dataTable);
       $this->search($dataTable['search']);
       $this->db->limit($dataTable['length'], $dataTable['start']);
+      $this->db->order_by($this->searchCol[$dataTable['columns']], $dataTable['order']);
       $query = $this->db->get('product');
       return $query->result();
    }
    // đếm số bản ghi
-   public function countALL($search){
-      $this->search($search);
+   public function countALL($dataTable){
+      $this->_filter($dataTable);
+      $this->search($dataTable['search']);
       $query = $this->db->get('product');
       return count($query->result());
    }
+
+   public function _filter($dataTable){
+      if (!empty($dataTable['catalog'])) {
+         $this->db->where('catalog',$dataTable['catalog']);
+      }
+      if (!empty($dataTable['maker_id'])) {
+         $this->db->where('maker_id',$dataTable['maker_id']);
+      }
+      if (!empty($dataTable['size'])) {
+         $this->db->select('*')->join('size', 'size.product_id = product.product_id');
+         $this->db->where('text_size',$dataTable['size']);
+      }
+   }
    public function search($search){
       if (!empty($search)) {
+         $dem = 0;
          foreach($this->searchCol as $col){
-            if (count($this->searchCol) == 1) {
+            if ($dem < 1) {
                $this->db->like($col,$search);   
             } else {
-               $this->db->or_like($col,$search);            
+               if ($this->searchCol[$dem] != '') {
+                  $this->db->or_like($col,$search);
+               }
             }
+            $dem++;
          }
       }
+   }
+   // lấy size cho database
+   public function list_size_datatable(){
+      $this->db->select('text_size');
+      $this->db->distinct();
+      $query = $this->db->get('size');
+      return $query->result();
    }
    // lấy ra số bản ghi(số bản gi, điểm bắt đầu)
    public function getList($total, $start){
       $this->db->limit($total, $start);
       $query = $this->db->get('product');// get('product')
       return $query->result_array();
+   }
+   public function count(){
+      return $this->db->count_all("product");
    }
    // lấy ra size theo đi product
    public function get_size($id){

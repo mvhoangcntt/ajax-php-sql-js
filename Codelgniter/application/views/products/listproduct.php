@@ -1,5 +1,5 @@
 
-<div class="container">
+<div class="container-fluid">
 	<div class="row add">
 		<div class="col-lg-2">
 			

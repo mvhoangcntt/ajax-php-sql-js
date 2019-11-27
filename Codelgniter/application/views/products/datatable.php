@@ -1,8 +1,37 @@
 <div class="container-fluid">
-	<div class="row text-center"><h1>Danh sách sản phẩm</h1></div>
-	<div class="row text-right">
-		<div style="padding-bottom: 10px; padding-right: 15px">
-			<input type="button" id="btn" class="btn bg-dark" name="" value="Thêm">
+	<div class="row text-center">
+		<h1 class="w-100">Danh sách sản phẩm</h1>
+	</div>
+	<div class="row mx-3 my-3 d-flex justify-content-between">
+		<div class="">
+			<div class="d-inline-block">
+				<select name="filter_catalog" class="custom-select">
+					<option value="">Danh mục</option>
+					<option value="1">Áo khoác</option>
+					<option value="2">Quần tây</option>
+				</select>
+			</div>
+			<div class="d-inline-block">
+				<select name="filter_maker_id" class="custom-select">
+					<option value="">Nhà sản xuất</option>
+					<option value="1">Hà Nội</option>
+					<option value="2">Thái Nguyên</option>
+				</select>
+			</div>
+			<div class="d-inline-block">
+				<select name="filter_size" class="custom-select">
+					<option value="">Chọn size</option>
+					<?php
+					foreach ($data as $item){
+						echo "<option value=".$item->text_size.">".$item->text_size."</option>";
+					} ?>
+				</select>
+			</div>
+		</div>
+		<div class="">
+			<div>
+				<input type="button" id="btn" class="btn btn-info" name="" value="Thêm">
+			</div>
 		</div>
 	</div>
 	<table id="example" class="display" style="width:100%">
@@ -14,7 +43,7 @@
 	        <th nowrap>Danh mục</th>
 	        <th nowrap>Hình ảnh</th>
 	        <th nowrap>Size</th>
-	        <th nowrap>nhà ản xuất</th>
+	        <th nowrap>Nhà ản xuất</th>
 	        <th nowrap>Gía (VND)</th>
 	        <th nowrap>Ngày tạo</th>
 	        <th nowrap>Lượt xem</th>

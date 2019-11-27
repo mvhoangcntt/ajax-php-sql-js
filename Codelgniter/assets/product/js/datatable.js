@@ -2,10 +2,18 @@
 var listData = BASE_URL+"products/jsonDatatable";
 
 $(document).ready(function() {
-	$('#example').DataTable( {
+	var table = $('#example').DataTable( {
 		"processing": true,
 		"serverSide": true,
-        "ajax": listData,
+        "ajax": {
+        	"url": listData,
+        	"data": function(d){
+				d.catalog  = $("select[name='filter_catalog']").val();
+				d.maker_id = $("select[name='filter_maker_id']").val();
+				d.size     = $("select[name='filter_size']").val();
+	        }
+        },
+        
         "language":{
         	"search": "Tìm kiếm :",
         	"info":      "Đang hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
@@ -44,8 +52,20 @@ $(document).ready(function() {
             { "data": "product_id", "render": function ( data, type, row, meta ) {
 			      return '<input class="update  btn" type="button" name="" id="'+data+'" value="Sửa">/<input class="delete btn" type="button" name="" id="'+data+'" value="Xóa">';
 			    } },
+        ],
+        "columnDefs": [
+        	{ targets: [5,11], orderable: false},
         ]
     })
-});
 
+    $("select[name='filter_catalog']").change(function(){
+    	table.ajax.reload();
+    })
+    $("select[name='filter_maker_id']").change(function(){
+    	table.ajax.reload();
+    })
+    $("select[name='filter_size']").change(function(){
+    	table.ajax.reload();
+    })
+});
 

@@ -11,29 +11,35 @@ class Products extends MY_Controller {
    public function index()
    {
       $data = array();
+      $data['data'] = $this->products_model->list_size_datatable();
       $data['layout'] = $this->load->view('products/datatable', $data, true);
       $this->load->view('partical/master_layout',$data);
    }
    public function jsonDatatable()
    {
-      $dataTable['start']  = $this->input->get('start');
-      $dataTable['length'] = $this->input->get('length');
-      $dataTable['search'] = $this->input->get('search[value]');
-      $data                = $this->products_model->get_product_datatable($dataTable);
+      $dataTable['start']    = $this->input->get('start');
+      $dataTable['length']   = $this->input->get('length');
+      $dataTable['search']   = $this->input->get('search[value]');
+      $dataTable['order']    = $this->input->get('order[0][dir]');
+      $dataTable['columns']  = $this->input->get('order[0][column]');
+      $dataTable['catalog']  = $this->input->get('catalog');
+      $dataTable['maker_id'] = $this->input->get('maker_id');
+      $dataTable['size']     = $this->input->get('size');
+      $data                  = $this->products_model->get_product_datatable($dataTable);
       foreach ($data as $index => $value) {
          $size        = $this->products_model->get_size($value->product_id);
          $value->size = $size;
       }
       $product = array(
          "data"            => $data,
-         "recordsTotal"    => $this->products_model->countALL($dataTable['search']),
-         "recordsFiltered" => $this->products_model->countALL($dataTable['search']),
+         "recordsTotal"    => $this->products_model->countALL($dataTable),
+         "recordsFiltered" => $this->products_model->countALL($dataTable),
       );
       exit(json_encode($product));
    }
    public function view($limit = '',$page = 'listproduct')
    {
-      $config['total_rows'] = $this->products_model->countALL('search');
+      $config['total_rows'] = $this->products_model->count();
       $config['base_url']   = base_url()."products/view";
       $config['per_page']   = 4;
       $this->pagination->initialize($config);
