@@ -20,34 +20,32 @@ class Products_model extends MY_Model {
    {
       $this->load->database();
    }
-   // lấy dữ liệu cho datatable
-   public function get_product_datatable($dataTable)
+   // Sử lý Datatable
+   public function get_product_datatable($params)
    {  
-      $this->_filter($dataTable);
-      $this->search($dataTable['search']);
-      $this->db->limit($dataTable['length'], $dataTable['start']);
-      $this->db->order_by($this->searchCol[$dataTable['columns']], $dataTable['order']);
+      $this->_filter($params);
+      $this->search($params['search']);
+      $this->db->limit($params['length'], $params['start']);
+      $this->db->order_by($this->searchCol[$params['columns']], $params['order']);
       $query = $this->db->get('product');
       return $query->result();
    }
-   // đếm số bản ghi
-   public function countALL($dataTable){
-      $this->_filter($dataTable);
-      $this->search($dataTable['search']);
+   public function countALL($params){
+      $this->_filter($params);
+      $this->search($params['search']);
       $query = $this->db->get('product');
       return count($query->result());
    }
-
-   public function _filter($dataTable){
-      if (!empty($dataTable['catalog'])) {
-         $this->db->where('catalog',$dataTable['catalog']);
+   public function _filter($params){
+      if (!empty($params['catalog'])) {
+         $this->db->where('catalog',$params['catalog']);
       }
-      if (!empty($dataTable['maker_id'])) {
-         $this->db->where('maker_id',$dataTable['maker_id']);
+      if (!empty($params['maker_id'])) {
+         $this->db->where('maker_id',$params['maker_id']);
       }
-      if (!empty($dataTable['size'])) {
+      if (!empty($params['size'])) {
          $this->db->select('*')->join('size', 'size.product_id = product.product_id');
-         $this->db->where('text_size',$dataTable['size']);
+         $this->db->where('text_size',$params['size']);
       }
    }
    public function search($search){
@@ -65,6 +63,7 @@ class Products_model extends MY_Model {
          }
       }
    }
+   //----------- END CODE Datatable-------------------
    // lấy size cho database
    public function list_size_datatable(){
       $this->db->select('text_size');

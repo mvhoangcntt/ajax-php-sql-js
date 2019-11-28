@@ -17,25 +17,29 @@ class Products extends MY_Controller {
    }
    public function jsonDatatable()
    {
-      $dataTable['start']    = $this->input->get('start');
-      $dataTable['length']   = $this->input->get('length');
-      $dataTable['search']   = $this->input->get('search[value]');
-      $dataTable['order']    = $this->input->get('order[0][dir]');
-      $dataTable['columns']  = $this->input->get('order[0][column]');
-      $dataTable['catalog']  = $this->input->get('catalog');
-      $dataTable['maker_id'] = $this->input->get('maker_id');
-      $dataTable['size']     = $this->input->get('size');
-      $data                  = $this->products_model->get_product_datatable($dataTable);
+      $input_get = $this->convert_Datatable();
+      $params['start']    = $input_get['start'];
+      $params['length']   = $input_get['length'];
+      $params['search']   = $input_get['search']['value'];
+      $params['order']    = $input_get['order'][0]['dir'];
+      $params['columns']  = $input_get['order'][0]['column'];
+      $params['catalog']  = $input_get['catalog'];
+      $params['maker_id'] = $input_get['maker_id'];
+      $params['size']     = $input_get['size'];
+      $data   = $this->products_model->get_product_datatable($params);
       foreach ($data as $index => $value) {
          $size        = $this->products_model->get_size($value->product_id);
          $value->size = $size;
       }
       $product = array(
          "data"            => $data,
-         "recordsTotal"    => $this->products_model->countALL($dataTable),
-         "recordsFiltered" => $this->products_model->countALL($dataTable),
+         "recordsTotal"    => $this->products_model->countALL($params),
+         "recordsFiltered" => $this->products_model->countALL($params),
       );
       exit(json_encode($product));
+   }
+   public function convert_Datatable(){
+      return $this->input->get();
    }
    public function view($limit = '',$page = 'listproduct')
    {
@@ -124,8 +128,9 @@ class Products extends MY_Controller {
    public function convert_data(){
       $this->_validate();
       $data  = $this->input->post();
-      if(!empty(parent::upload("./image","image_link")))
-         $data['image_link'] = parent::upload("./image","image_link");
+      $img = parent::upload("./image","image_link");
+      if (!empty($img))
+         $data['image_link'] = $img;
       return $data;
    }
    // validate kiểm tra lỗi
@@ -213,8 +218,9 @@ class Products extends MY_Controller {
       }
    }
 
-   public function delete_pr($id){
+   public function delete_pr($id,$image_link){
       if($this->products_model->delete_product($id)){
+         unlink("image/".$image_link);
          $er = array(
             'type'=>'success',
             'message' => "Xóa thành công !",

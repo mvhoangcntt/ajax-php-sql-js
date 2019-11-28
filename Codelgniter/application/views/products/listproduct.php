@@ -8,7 +8,7 @@
 			<h2>Danh sách sản phẩm</h2>
 		</div>
 		<div class="col-lg-2 text-center button">
-			<input type="button" id="btn" class="btn bg-dark" name="" value="Thêm">
+			<input type="button" id="btninsert" class="btn bg-dark" name="" value="Thêm">
 		</div>
 	</div>
 	<div class="table-responsive">
@@ -50,8 +50,8 @@
 						<td><?php echo $news_item['view']; ?></td>
 						<td><?php echo $news_item['total']; ?></td>
 						<td>
-							<input class="update  btn" type="button" name="" id="<?php echo $news_item['product_id']; ?>" value="Sửa"> /
-							<input class="delete btn" type="button" name="" id="<?php echo $news_item['product_id']; ?>" value="Xóa">
+							<input class="btnupdate  btn" type="button" name="" id="<?php echo $news_item['product_id']; ?>" value="Sửa"> /
+							<input class="btndelete btn" type="button" name="" image="<?php echo $news_item['image_link']; ?>" id="<?php echo $news_item['product_id']; ?>" value="Xóa">
 						</td>
 					</tr>
 				<?php endforeach; ?>
@@ -90,7 +90,7 @@
 					</div>
 					<div>
 						<label for="image_link">Hình ảnh :</label>
-						<input type="file" name="image_link" id="image_link" class="form-control">
+						<input type="file" name="image_link" id="image_link" >
 					</div>
 					<div>
 						<label>Kích cỡ :</label>
@@ -112,7 +112,7 @@
 							</div>
 							
 						</div>
-						<div class="add_size" id="0">+ Thêm ...</div>
+						<div class="add_form_size" id="0">+ Thêm ...</div>
 					</div>
 					<div>
 						<label for="maker_id">Nhà sản xuất :</label>
@@ -130,7 +130,7 @@
 						<input type="text" class="form-control" id="total" name="total" placeholder="10">
 					</div>
 					<div style="padding-top: 10px">
-						<input type="submit" name="submit" value="Thêm" class="btn form-control btn-primary submit">
+						<input type="submit" name="submit" value="Thêm" class="btn form-control btn-primary btnsubmit">
 					</div>
 				</div>
 			</form>

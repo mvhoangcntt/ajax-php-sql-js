@@ -5,7 +5,7 @@ var ajax_create = BASE_URL+"products/create/";
 var ajax_update = BASE_URL+"products/update/";
 
 // add form update thông tin sản phẩm
-$(document).on("click",".update",function(){
+$(document).on("click",".btnupdate",function(){
 	$(".rem").remove();
 	$( ".form_hide" ).addClass( "form_show" );
 	$( ".screen_hide" ).addClass( "screen_show" );
@@ -35,7 +35,7 @@ $(document).on("click",".update",function(){
 })
 // add kích cỡ sản phẩm trong form
 var size = 0;
-$(".add_size").click(function(){
+$(".add_form_size").click(function(){
 	size++;
 	$(".totong").append("<div class='rem'><div class='form_size'><div class='imput_right'><input type='text' id='quantity' class='form-control' name='quantity["+size+"]' placeholder='Số lượng'></div><div class='input_left'><input type='text' id='textsize' class='form-control' name='textsize["+size+"]' placeholder='size'></div><i class='fa fa-times'></i></div></div>");
 });
@@ -54,11 +54,12 @@ $(".screen_hide").click(function(){
 })
 
 // xóa sản phẩm
-$(document).on("click",".delete",function(){
+$(document).on("click",".btndelete",function(){
 	var product_id = $(this).attr("id");
+	var image_link = $(this).attr("image");
 	$.ajax({
 		type : "GET",
-		url : ajax_delete + product_id,
+		url : ajax_delete + product_id +"/"+ image_link,
 		success: function(response){
 			var jsonData = JSON.parse(response);
 	        if (jsonData.type === 'errors') {
@@ -72,7 +73,7 @@ $(document).on("click",".delete",function(){
 })
 
 // mở form insert 
-$("#btn").click(function(){
+$("#btninsert").click(function(){
 	// add form
     $( ".form_hide" ).addClass( "form_show" );
 	$( ".screen_hide" ).addClass( "screen_show" );
@@ -81,7 +82,7 @@ $("#btn").click(function(){
 	$("input[name='submit']").val("Insert");
 })
 // kiểm tra dữ liệu hợ lệ
-$(".submit").click(function(event){
+$(".btnsubmit").click(function(event){
 	$(".err").remove();
 	var name = $("input[name='name']").val();
 	var content = $("textarea[name='content']").val();

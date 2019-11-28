@@ -80,7 +80,7 @@
 					</div>
 					<div>
 						<label for="image_link">Hình ảnh :</label>
-						<input type="file" name="image_link" id="image_link" class="form-control">
+						<input type="file" name="image_link" id="image_link">
 					</div>
 					<div>
 						<label>Kích cỡ :</label>
